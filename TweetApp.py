@@ -55,7 +55,7 @@ class MyFileDropTarget(wx.FileDropTarget):
 
 class MyFrame(wx.Frame):
     WINDOW_WIDTH = 200
-    WINDOW_HEIGHT = 100
+    WINDOW_HEIGHT = 150
     # MacBook Pro 13-inchの右下 (1280,800)
     WINDOW_POSITION_X = 1280 - WINDOW_WIDTH
     WINDOW_POSITION_Y = 800 - WINDOW_HEIGHT
