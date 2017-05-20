@@ -10,3 +10,7 @@ AS,Accesss_Token_Secert
 ```
 とするとトークン情報を読み込みます．
 
+以下のコマンドでapp化
+```
+pyinstaller --windowed TweetApp.py -i TweetApp.icns
+```
