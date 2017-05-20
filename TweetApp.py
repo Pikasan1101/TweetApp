@@ -6,16 +6,23 @@ import json
 import csv
 from PIL import Image
 from requests_oauthlib import OAuth1Session
+import sys
+import os
 
 class TokenReader:
     def __init__(self):
-        self.__reader = csv.reader(open("token.csv", "r"))
+        self.__reader = csv.reader(open(self.resource_path("./conf/token.csv"), "r"))
 
     def fetchToken(self):
         tokens = {}
         for line in self.__reader:
             tokens[line[0]] = line[1]
         return tokens
+
+    def resource_path(self, relative):
+        if hasattr(sys, "_MEIPASS"):
+            return os.path.join(sys._MEIPASS, relative)
+        return os.path.join(relative)
 
 class Tweet:
     def __init__(self):
@@ -140,23 +147,31 @@ class MyFileDropTarget(wx.FileDropTarget):
         self.__mediaHolder.show()
 
 class MyFrame(wx.Frame):
+    __WINDOW_WIDTH = 270
+    __WINDOW_HEIGHT = 180
+    __MARGIN = 5
+    # MacBook Pro 13-inchの右下 (1280,800)
+    __WINDOW_POSITION_X = 1280 - __WINDOW_WIDTH
+    __WINDOW_POSITION_Y = 800 - __WINDOW_HEIGHT
+
     def __init__(self):
-        wx.Frame.__init__(self, None, title="Twitter", size=(300, 300))
+        wx.Frame.__init__(self, None, title="Twitter", size=(self.__WINDOW_WIDTH, self.__WINDOW_HEIGHT), pos=(self.__WINDOW_POSITION_X, self.__WINDOW_POSITION_Y))
         self.__mediaHolder = MediaHolder(self)
         dt = MyFileDropTarget(self, self.__mediaHolder)  #ドロップする対象をこのフレーム全体にする
         self.SetDropTarget(dt)
 
     def __createImageArea(self, panel):
-        self.filePath = wx.TextCtrl(panel, -1, "", size=(300,-1))
-        self.filePath.Disable()
+        global filePath
+        filePath = wx.TextCtrl(panel, -1, "", size=(self.WINDOW_WIDTH,-1))
+        filePath.Disable()
 
     def __createButton(self, panel):
-        button = wx.Button(panel, -1, u"Tweet", size=(280, -1), pos=(10, 240))
+        button = wx.Button(panel, -1, u"Tweet", size=(55, -1))
         button.Bind(wx.EVT_BUTTON, self.__clickButton)
         return button
 
     def __createTextArea(self, panel):
-        text = wx.TextCtrl(panel, -1, size=(280, 130), style=wx.TE_MULTILINE, pos=(10, 100))
+        text = wx.TextCtrl(panel, -1, size=(self.__WINDOW_WIDTH-(self.__MARGIN*2), self.__WINDOW_HEIGHT-105), style=wx.TE_MULTILINE, pos=(self.__MARGIN, 80))
         text.Bind(wx.EVT_KEY_UP, self.__onKeyPress)
         dt = MyFileDropTarget(self, self.__mediaHolder)
         text.SetDropTarget(dt)
@@ -164,7 +179,7 @@ class MyFrame(wx.Frame):
 
     def __setLayout(self, panel):
         layout = wx.BoxSizer(wx.VERTICAL)
-        # layout.Add(self.filePath, 0, wx.ALL, 5)
+        layout.Add(self.filePath, 0, wx.ALL, 5)
         layout.Add(self.__text, 0, wx.ALL, 5)
         layout.Add(self.__button, 0, wx.ALL, 5)
         panel.SetSizer(layout)
@@ -172,7 +187,7 @@ class MyFrame(wx.Frame):
     def createParts(self):
         panel = wx.Panel(self)
         # self.__createImageArea(panel)
-        self.__button = self.__createButton(panel)
+        # self.__button = self.__createButton(panel)
         self.__text = self.__createTextArea(panel)
         # self.__setLayout(panel)
 
