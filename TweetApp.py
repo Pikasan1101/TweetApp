@@ -3,17 +3,30 @@
 
 import wx
 import json
+import csv
 from requests_oauthlib import OAuth1Session
 
 filePath = None
 
+class TokenReader:
+    def __init__(self):
+        self.__reader = csv.reader(open("token.csv", "r"))
+
+    def fetchToken(self):
+        tokens = {}
+        for line in self.__reader:
+            tokens[line[0]] = line[1]
+        return tokens
+
 class Tweet:
     def __init__(self):
         # ここに適当に入れる
-        CK = ''                          # Consumer Key
-        CS = '' # Consumer Secret
-        AT = '' # Access Token
-        AS = ''      # Accesss Token Secert
+        tokenReader = TokenReader()
+        tokens = tokenReader.fetchToken()
+        CK = tokens["CK"]
+        CS = tokens["CS"]
+        AT = tokens["AT"]
+        AS = tokens["AS"]
         self.__MEDIA_URL = "https://upload.twitter.com/1.1/media/upload.json"
         self.__URL = "https://api.twitter.com/1.1/statuses/update.json"  # ツイート投稿用のURL
         self.__session = OAuth1Session(CK, CS, AT, AS)
@@ -86,7 +99,7 @@ class MyFrame(wx.Frame):
 
     def __tweet(self):
         twitter = Tweet()
-        twitter.tweet(self.__text.GetValue())
+        # twitter.tweet(self.__text.GetValue())
         self.__clearTextArea()
 
     def __clearTextArea(self):
