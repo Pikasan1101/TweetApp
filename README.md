@@ -11,7 +11,7 @@ AS,Accesss_Token_Secert
 とするとトークン情報を読み込みます．
 
 ### app化について
-- TweetApp.icnsを用意し、
+- TweetApp.icnsを用意し（sample.icnsをコピーしてTweetApp.icnsに変更してもよい）
 
 ```
 pip install pyinstaller
