@@ -5,23 +5,40 @@ import wx
 import json
 from requests_oauthlib import OAuth1Session
 
-# ここに適当に入れる
-CK = ''                          # Consumer Key
-CS = '' # Consumer Secret
-AT = '' # Access Token
-AS = ''      # Accesss Token Secert
-MEDIA_URL = "https://upload.twitter.com/1.1/media/upload.json"
-URL = "https://api.twitter.com/1.1/statuses/update.json"  # ツイート投稿用のURL
+filePath = None
 
-path = None
+class Tweet:
+    def __init__(self):
+        # ここに適当に入れる
+        CK = ''                          # Consumer Key
+        CS = '' # Consumer Secret
+        AT = '' # Access Token
+        AS = ''      # Accesss Token Secert
+        self.__MEDIA_URL = "https://upload.twitter.com/1.1/media/upload.json"
+        self.__URL = "https://api.twitter.com/1.1/statuses/update.json"  # ツイート投稿用のURL
+        self.__session = OAuth1Session(CK, CS, AT, AS)
+
+    def tweet(self, text):
+        params = {"status": text}
+        params = self.addMedia(params, self.__session)
+        self.__session.post(self.__URL, params=params)
+
+    def addMedia(self, params, twitter):
+        if filePath.GetValue() != "":
+            files = {"media" : open(filePath.GetValue(), 'rb')}
+            req_media = twitter.post(self.__MEDIA_URL, files = files)
+            media_id = json.loads(req_media.text)['media_id']
+            params["media_ids"] =  [media_id]
+        return params
+
 class MyFileDropTarget(wx.FileDropTarget):
-    def __init__(self, window):
+    def __init__(self, target):
         wx.FileDropTarget.__init__(self)
-        self.window = window         #ファイルをドロップする対象
+        self.target = target         #ファイルをドロップする対象
 
     def OnDropFiles(self, x, y, filenames):  #ファイルをドロップするときの処理
         for file in filenames:
-            path.SetValue(file)
+            filePath.SetValue(file)
 
 class MyFrame(wx.Frame):
     def __init__(self):
@@ -29,70 +46,62 @@ class MyFrame(wx.Frame):
         dt = MyFileDropTarget(self)  #ドロップする対象をこのフレーム全体にする
         self.SetDropTarget(dt)
 
-    def createImageArea(self, panel):
-        global path
-        path = wx.TextCtrl(panel, -1, "", size=(300,-1))
-        path.Disable()
+    def __createImageArea(self, panel):
+        global filePath
+        filePath = wx.TextCtrl(panel, -1, "", size=(300,-1))
+        filePath.Disable()
 
-    def createButton(self, panel):
-        self.button = wx.Button(panel, -1, u"Tweet", size=(300, -1))
-        self.button.Bind(wx.EVT_BUTTON, self.clickButton)
+    def __createButton(self, panel):
+        button = wx.Button(panel, -1, u"Tweet", size=(300, -1))
+        button.Bind(wx.EVT_BUTTON, self.__clickButton)
+        return button
 
-    def createTextArea(self, panel):
-        self.text = wx.TextCtrl(panel, -1, size=(300, 200), style=wx.TE_MULTILINE)
-        self.text.Bind(wx.EVT_KEY_UP, self.onKeyPress)
-        dt = MyFileDropTarget(self.text)  #ドロップする対象をこのフレーム全体にする
-        self.text.SetDropTarget(dt)
+    def __createTextArea(self, panel):
+        text = wx.TextCtrl(panel, -1, size=(300, 200), style=wx.TE_MULTILINE)
+        text.Bind(wx.EVT_KEY_UP, self.__onKeyPress)
+        dt = MyFileDropTarget(text)
+        text.SetDropTarget(dt)
+        return text
 
-    def layout(self, panel):
+    def __setLayout(self, panel):
         layout = wx.BoxSizer(wx.VERTICAL)
-        layout.Add(path, 0, wx.ALL, 5)
-        layout.Add(self.text, 0, wx.ALL, 5)
-        layout.Add(self.button, 0, wx.ALL, 5)
+        layout.Add(filePath, 0, wx.ALL, 5)
+        layout.Add(self.__text, 0, wx.ALL, 5)
+        layout.Add(self.__button, 0, wx.ALL, 5)
         panel.SetSizer(layout)
 
     def createParts(self):
         panel = wx.Panel(self)
-        self.createImageArea(panel)
-        self.createButton(panel)
-        self.createTextArea(panel)
-        self.layout(panel)
+        self.__createImageArea(panel)
+        self.__button = self.__createButton(panel)
+        self.__text = self.__createTextArea(panel)
+        self.__setLayout(panel)
 
-    def clickButton(self, event):
-        self.tweet()
+    def __clickButton(self, event):
+        self.__tweet()
 
-    def onKeyPress(self, event):
+    def __onKeyPress(self, event):
         if (event.ShiftDown() or event.CmdDown()) and 13 == event.GetKeyCode():
-            self.tweet()
+            self.__tweet()
 
-    def tweet(self):
-        twitter = OAuth1Session(CK, CS, AT, AS)
-        params = {"status": self.text.GetValue()}
-        params = self.addMedia(params, twitter)
-        twitter.post(URL, params=params)
-        self.clearTextArea()
+    def __tweet(self):
+        twitter = Tweet()
+        twitter.tweet(self.__text.GetValue())
+        self.__clearTextArea()
 
-    def addMedia(self, params, twitter):
-        if path.GetValue() != "":
-            files = {"media" : open(path.GetValue(), 'rb')}
-            req_media = twitter.post(MEDIA_URL, files = files)
-            media_id = json.loads(req_media.text)['media_id']
-            params["media_ids"] =  [media_id]
-        return params
-
-    def clearTextArea(self):
-        self.text.SetValue("")
-        path.SetValue("")
+    def __clearTextArea(self):
+        self.__text.SetValue("")
+        filePath.SetValue("")
 
 class TweetApp:
-    def showWindow(self):
+    def __showWindow(self):
         frame = MyFrame()
         frame.createParts()
         frame.Show()
 
     def run(self):
         app = wx.PySimpleApp()
-        self.showWindow()
+        self.__showWindow()
         app.MainLoop()
 
 app = TweetApp()
