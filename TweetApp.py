@@ -54,23 +54,29 @@ class MyFileDropTarget(wx.FileDropTarget):
             filePath.SetValue(file)
 
 class MyFrame(wx.Frame):
+    WINDOW_WIDTH = 200
+    WINDOW_HEIGHT = 100
+    # MacBook Pro 13-inchの右下 (1280,800)
+    WINDOW_POSITION_X = 1280 - WINDOW_WIDTH
+    WINDOW_POSITION_Y = 800 - WINDOW_HEIGHT
+    
     def __init__(self):
-        wx.Frame.__init__(self, None, title="Twitter", size=(300, 300))
+        wx.Frame.__init__(self, None, title="Twitter", size=(self.WINDOW_WIDTH, self.WINDOW_HEIGHT), pos=(self.WINDOW_POSITION_X, self.WINDOW_POSITION_Y)) 
         dt = MyFileDropTarget(self)  #ドロップする対象をこのフレーム全体にする
         self.SetDropTarget(dt)
 
     def __createImageArea(self, panel):
         global filePath
-        filePath = wx.TextCtrl(panel, -1, "", size=(300,-1))
+        filePath = wx.TextCtrl(panel, -1, "", size=(self.WINDOW_WIDTH,-1))
         filePath.Disable()
 
     def __createButton(self, panel):
-        button = wx.Button(panel, -1, u"Tweet", size=(300, -1))
+        button = wx.Button(panel, -1, u"Tweet", size=(55, -1))
         button.Bind(wx.EVT_BUTTON, self.__clickButton)
         return button
 
     def __createTextArea(self, panel):
-        text = wx.TextCtrl(panel, -1, size=(300, 200), style=wx.TE_MULTILINE)
+        text = wx.TextCtrl(panel, -1, size=(self.WINDOW_WIDTH, self.WINDOW_HEIGHT), style=wx.TE_MULTILINE)
         text.Bind(wx.EVT_KEY_UP, self.__onKeyPress)
         dt = MyFileDropTarget(text)
         text.SetDropTarget(dt)
