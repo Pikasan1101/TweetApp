@@ -1,7 +1,7 @@
 # TweetApp
 ツイートできるやつ
 ### トークン情報
-TweetApp.pyと同じディレクトリにtoken.csvを置き，
+conf/token.csvを置き，
 ```
 CK,Consumer_Key
 CS,Consumer_Secret
@@ -10,7 +10,11 @@ AS,Accesss_Token_Secert
 ```
 とするとトークン情報を読み込みます．
 
-以下のコマンドでapp化
+### app化について
+- TweetApp.icnsを用意し（sample.icnsをコピーしてTweetApp.icnsに変更してもよい）
+
 ```
-pyinstaller --windowed TweetApp.py -i TweetApp.icns
+pip install pyinstaller
+pyinstaller TweetApp.spec
 ```
+とすると、dict以下にTweetApp.appができます。
