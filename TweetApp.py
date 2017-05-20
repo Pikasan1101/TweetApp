@@ -81,7 +81,7 @@ class MyFrame(wx.Frame):
         self.__tweet()
 
     def __onKeyPress(self, event):
-        if (event.ShiftDown() or event.CmdDown()) and 13 == event.GetKeyCode():
+        if (event.RawControlDown() or event.ShiftDown() or event.CmdDown()) and 13 == event.GetKeyCode():
             self.__tweet()
 
     def __tweet(self):
