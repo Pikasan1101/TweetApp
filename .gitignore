@@ -1,3 +1,5 @@
 .DS_Store
 token.csv
+build/*
+dist/*
 TweetApp.icns
