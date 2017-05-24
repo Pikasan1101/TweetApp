@@ -9,9 +9,10 @@ from requests_oauthlib import OAuth1Session
 import sys
 import os
 
+
 class TokenReader:
     def __init__(self):
-        self.__reader = csv.reader(open(self.resource_path("./conf/token.csv"), "r"))
+        self.__reader = csv.reader(open(self.__resourcePath("./conf/token.csv"), "r"))
 
     def fetchToken(self):
         tokens = {}
@@ -19,7 +20,7 @@ class TokenReader:
             tokens[line[0]] = line[1]
         return tokens
 
-    def resource_path(self, relative):
+    def __resourcePath(self, relative):
         if hasattr(sys, "_MEIPASS"):
             return os.path.join(sys._MEIPASS, relative)
         return os.path.join(relative)
@@ -184,11 +185,26 @@ class MyFrame(wx.Frame):
         layout.Add(self.__button, 0, wx.ALL, 5)
         panel.SetSizer(layout)
 
+    def __createMenu(self):
+        menubar = wx.MenuBar()
+        menu = wx.Menu()
+        exit = menu.Append(wx.ID_EXIT, "Exit")
+        exitMenu = wx.MenuItem(menu, 1, "Exit")
+        menu.Append(exitMenu)
+        menubar.Append(menu, '&Menu')
+        self.SetMenuBar(menubar)
+        self.Bind(wx.EVT_MENU, self.__exit, exit)
+        self.Bind(wx.EVT_MENU, self.__exit, exitMenu)
+
+    def __exit(self, event):
+        self.Close()
+
     def createParts(self):
         panel = wx.Panel(self)
         # self.__createImageArea(panel)
         # self.__button = self.__createButton(panel)
         self.__text = self.__createTextArea(panel)
+        self.__createMenu()
         # self.__setLayout(panel)
 
     def __clickButton(self, event):
@@ -215,7 +231,7 @@ class TweetApp:
         frame.Show()
 
     def run(self):
-        app = wx.PySimpleApp()
+        app = wx.App()
         self.__showWindow()
         app.MainLoop()
 
