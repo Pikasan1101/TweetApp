@@ -2,9 +2,9 @@
 ツイートできるやつ
 
 ### ライブラリのインストール
-''''
+```
 pip install -r requirements.txt
-'''
+```
  
 ### トークン情報
 conf/token.csvを置き，
