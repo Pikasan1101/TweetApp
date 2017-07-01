@@ -1,5 +1,11 @@
 # TweetApp
 ツイートできるやつ
+
+### ライブラリのインストール
+''''
+pip install -r requirements.txt
+'''
+ 
 ### トークン情報
 conf/token.csvを置き，
 ```
@@ -14,7 +20,6 @@ AS,Accesss_Token_Secert
 - TweetApp.icnsを用意し（sample.icnsをコピーしてTweetApp.icnsに変更してもよい）
 
 ```
-pip install pyinstaller
 pyinstaller TweetApp.spec
 ```
 とすると、dict以下にTweetApp.appができます。
