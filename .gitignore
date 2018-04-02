@@ -2,4 +2,5 @@
 token.csv
 build/*
 dist/*
+conf/*
 TweetApp.icns

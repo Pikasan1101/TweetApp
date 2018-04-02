@@ -8,17 +8,16 @@ from PIL import Image
 from requests_oauthlib import OAuth1Session
 import sys
 import os
+import ConfigParser
 
 
 class TokenReader:
     def __init__(self):
-        self.__reader = csv.reader(open(self.__resourcePath("./conf/token.csv"), "r"))
+        self.__inifile = ConfigParser.SafeConfigParser()
+        self.__inifile.read(self.__resourcePath("./conf/token.ini"))
 
     def fetchToken(self):
-        tokens = {}
-        for line in self.__reader:
-            tokens[line[0]] = line[1]
-        return tokens
+        return self.__inifile
 
     def __resourcePath(self, relative):
         if hasattr(sys, "_MEIPASS"):
@@ -27,13 +26,12 @@ class TokenReader:
 
 class Tweet:
     def __init__(self):
-        # ここに適当に入れる
         tokenReader = TokenReader()
         tokens = tokenReader.fetchToken()
-        CK = tokens["CK"]
-        CS = tokens["CS"]
-        AT = tokens["AT"]
-        AS = tokens["AS"]
+        CK = tokens.get("Tokens", "CK")
+        CS = tokens.get("Tokens", "CS")
+        AT = tokens.get("Tokens", "AT")
+        AS = tokens.get("Tokens", "AS")
         self.__MEDIA_URL = "https://upload.twitter.com/1.1/media/upload.json"
         self.__URL = "https://api.twitter.com/1.1/statuses/update.json"  # ツイート投稿用のURL
         self.__session = OAuth1Session(CK, CS, AT, AS)
