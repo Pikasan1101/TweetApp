@@ -5,14 +5,15 @@
 ```
 pip install -r requirements.txt
 ```
- 
+
 ### トークン情報
-conf/token.csvを置き，
+conf/token.iniを置き，
 ```
-CK,Consumer_Key
-CS,Consumer_Secret
-AT,Access_Token
-AS,Accesss_Token_Secert
+[Tokens]
+CK = Consumer_Key
+CS = Consumer_Secret
+AT = Access_Token
+AS = Accesss_Token_Secert
 ```
 とするとトークン情報を読み込みます．
 
